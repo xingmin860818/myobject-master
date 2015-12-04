@@ -118,7 +118,6 @@ class Database(object):
 	def Search(self,table,val=None):
 		reslist = []
 		if val == None:
-			pass
 			for row in self.session.query(table).all():
 				reslist.append(row.get_all())
 			return reslist
