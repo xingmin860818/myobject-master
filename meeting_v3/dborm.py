@@ -24,7 +24,7 @@ class User_Regist(Base):
 
 	#用于查询时获取所有信息
 	def get_all(self):
-		return(self.role,self.user,self.email)
+		return{'id':self.id,'role':self.role,'user':self.user,'email':self.email}
 
 #会议表类
 class Meeting(Base):
@@ -38,7 +38,7 @@ class Meeting(Base):
 	meeting_time = Column(String(20))
 
 	def get_all(self):
-		return(self.title,self.content,self.leader,self.meeting_time)
+		return{'id':self.id,'title':self.title,'content':self.content,'leader':self.leader,'time':self.meeting_time}
 #报名表类
 class User_Sign(Base):
 	__tablename__ = 'sign'
@@ -49,7 +49,7 @@ class User_Sign(Base):
 	user = Column(String(15))
 
 	def get_all(self):
-		return(self.title,self.user)
+		return{'id':self.id,'title':self.title,'user':self.user}
 #评论表类
 class User_Comment(Base):
 	__tablename__ = 'comment'
@@ -61,15 +61,17 @@ class User_Comment(Base):
 	user_comment = Column(String(1000))
 
 	def get_all(self):
-		return(self.user,self.title,self.user_comment)
+		return{'id':self.id,'user':self.user,'title':self.title,'comment':self.user_comment}
 
 
 
 #定义数据库的增删改查操作
 class Database(object):
 	def __init__(self):
-		db_conn = '{}://{}:{}@{}'.format(config.db_server,config.conn_user,config.password,config.conn_addr)
-		db_server = 'use {}'.format(config.createdb)
+	#	db_conn = '{}://{}:{}@{}'.format(config.db_server,config.conn_user,config.password,config.conn_addr)
+	#	db_server = 'use {}'.format(config.createdb)
+		db_conn = 'mysql://recp:123456@192.168.20.237'
+		db_server = 'use Meeting'
 		db = create_engine(db_conn)
 		db.execute(db_server)
 		Base.metadata.create_all(db)
@@ -114,16 +116,16 @@ class Database(object):
 			self.session.rollback()
 			raise
 	def Search(self,table,val=None):
-		dic = {}
+		reslist = []
 		if val == None:
 			pass
 			for row in self.session.query(table).all():
-				dic[row.id] = row.get_all()
-			return dic
+				reslist.append(row.get_all())
+			return reslist
 		else:
 			for line in self.session.query(table).filter(table.user==val).all():
-				dic[line.id] = line.get_all()
-			return dic
+				reslist.append(line.get_all())
+			return reslist
 	def Login_auth(self,auth_user):
 		try:
 			dic = {}
